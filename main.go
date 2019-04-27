@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -16,11 +17,27 @@ import (
 	"github.com/yanc0/untrak/config"
 )
 
+const (
+	// BANNER is what is printed for help/info output.
+	BANNER = "Untrack - %s\n"
+)
+
+var (
+	// version indicates which version of the binary is running.
+	version string
+)
+
 func main() {
 	// Flags, command line parameters
 	var cfgPathOpt = flag.String("config", "./untrak.yaml", "untrak Config Path")
 	var outputOpt = flag.String("o", "text", "Output format")
+	var versionOpt = flag.Bool("version", false, "Print version of the application")
 	flag.Parse()
+
+	if *versionOpt {
+		fmt.Printf("%s\n", version)
+		os.Exit(0)
+	}
 
 	var wg sync.WaitGroup
 	var resourcesIn []*kubernetes.Resource
