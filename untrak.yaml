@@ -24,11 +24,11 @@ out:
 # - cmd: "cat"
 #   args: ["example/$SOME_FILE_NAME"]
 
-# You can exclude some resource type from the comparison
+# You can exclude some resource from the comparison using resource name or regular expression
 exclude:
-- namespace
-- secret
-- configmap
+- /namespace/.*
+- deafult/secret/sec
+- .*/configmap/.*
 
 # Declare non-namespaced resource types to be considered in resource comparison.
 # There are some defined resource types by default by default like namespace,

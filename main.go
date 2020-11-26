@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"sync"
 
 	"github.com/yanc0/untrak/outputs"
@@ -135,11 +136,16 @@ func getKubernetesResources(cfgs []*config.CommandConfig) ([]*kubernetes.Resourc
 	return resources, nil
 }
 
-func listUntrackedResources(in []*kubernetes.Resource, out []*kubernetes.Resource, kindExclude []string, nonNamespaced []string) []*kubernetes.Resource {
+func listUntrackedResources(in []*kubernetes.Resource, out []*kubernetes.Resource, excludeRegexp []string, nonNamespaced []string) []*kubernetes.Resource {
+	var compiledExcludeRegexp []*regexp.Regexp
+	for _, reg := range excludeRegexp {
+		compiledExcludeRegexp = append(compiledExcludeRegexp, regexp.MustCompile("(?i)"+reg))
+	}
+
 	var untrackedResources []*kubernetes.Resource
 	for _, resourceOut := range out {
-		// Resource is in the exlude list, skip it
-		if utils.StringInListCaseInsensitive(kindExclude, resourceOut.Kind) {
+		// Resource is in the exclude list, skip it
+		if utils.StringListRegexpMatch(compiledExcludeRegexp, resourceOut.ID()) {
 			continue
 		}
 		found := false
