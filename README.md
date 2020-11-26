@@ -44,7 +44,7 @@ out:
   args: ["get", "cm,deploy,svc,ing", "-o", "yaml", "-n", "api"]
 
 exclude:
-- namespace
+- /namespace/.*
 ```
 To show untracked resources in your cluster (out) simply launch `untrak` like so:
 
@@ -54,6 +54,15 @@ $ untrak -c untrak.yaml -o text
 - api/ConfigMap/django-config-g55mctg456
 - api/Ingress/my-ingress
 ```
+
+The untracked resources have the following format:
+* *Namespaced resources*: `namespace/kind/name`
+* *Non-namespaced resources*: `/kind/name`
+
+You can exclude any resource (with the previous format) form tracking by setting `exclude` section in the config file with list of excluded resources. The excluded resource could be a full resource name or regular expressions. For examples:
+* to exclude any namespace resource: `/namespace/.*`
+* to exclude secret `sec` in namespace `deafult`: `deafult/secret/sec`
+* to exclude any config map: `.*/configmap/.*`
 
 If your manifests have the namespace set to non-namespaced resource, untrak will skip the namespace. A list of supported non-namespaced resource types that will be skipped are defined by default. If you have installed more non-namespaced resource types (eg., `CRDs`), you could add extra resource types to skip namespace in comparison:
 ```yaml
